@@ -5,5 +5,5 @@
     android:layout_height="match_parent"
     tools:context="com.nutto.weatherapp.WeatherActivity"
     tools:ignore="MergeRootFrame"
-    android:background="#FF0099CC" />
+    android:background="#00CDAC" />
 

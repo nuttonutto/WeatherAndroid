@@ -1,6 +1,5 @@
 package com.nutto.weatherapp;
 
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -23,7 +22,6 @@ public class WeatherFragment extends Fragment {
     Typeface weatherFont;
      
     TextView cityField;
-    TextView updatedField;
     TextView detailsField;
     TextView currentTemperatureField;
     TextView weatherIcon;
@@ -39,8 +37,6 @@ public class WeatherFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_weather, container, false);
         cityField = (TextView)rootView.findViewById(R.id.city_field);
-        updatedField = (TextView)rootView.findViewById(R.id.updated_field);
-        detailsField = (TextView)rootView.findViewById(R.id.details_field);
         currentTemperatureField = (TextView)rootView.findViewById(R.id.current_temperature_field);
         weatherIcon = (TextView)rootView.findViewById(R.id.weather_icon);
          
@@ -54,14 +50,14 @@ public class WeatherFragment extends Fragment {
 	    super.onCreate(savedInstanceState);  
 	    //weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weather.ttf");     
 	    weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "weather.ttf");     
-	    updateWeatherData(new CityPreference(getActivity()).getCity());
+	    updateWeatherData();
 	}
      
 	
-	private void updateWeatherData(final String city){
+	private void updateWeatherData(){
 	    new Thread(){
 	        public void run(){
-	            final JSONObject json = RemoteFetch.getJSON(getActivity(), city);
+	            final JSONObject json = RemoteFetch.getJSON(getActivity());
 	            if(json == null){
 	                handler.post(new Runnable(){
 	                    public void run(){
@@ -89,17 +85,9 @@ public class WeatherFragment extends Fragment {
 	         
 	        JSONObject details = json.getJSONArray("weather").getJSONObject(0);
 	        JSONObject main = json.getJSONObject("main");
-	        detailsField.setText(
-	                details.getString("description").toUpperCase(Locale.US) +
-	                "\n" + "Humidity: " + main.getString("humidity") + "%" +
-	                "\n" + "Pressure: " + main.getString("pressure") + " hPa");
 	         
 	        currentTemperatureField.setText(
 	                    String.format("%.2f", main.getDouble("temp"))+ " ℃");
-	 
-	        DateFormat df = DateFormat.getDateTimeInstance();
-	        String updatedOn = df.format(new Date(json.getLong("dt")*1000));
-	        updatedField.setText("Last update: " + updatedOn);
 	 
 	        setWeatherIcon(details.getInt("id"),
 	                json.getJSONObject("sys").getLong("sunrise") * 1000,
@@ -137,10 +125,6 @@ public class WeatherFragment extends Fragment {
 	        }
 	    }
 	    weatherIcon.setText(icon);
-	}
-	
-	public void changeCity(String city){
-	    updateWeatherData(city);
-	}
+	}	
 	
 }
